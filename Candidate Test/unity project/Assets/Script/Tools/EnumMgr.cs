@@ -28,4 +28,5 @@ namespace Assets.Script.Tools
         Plastic,
         Max,
     }
+
 }

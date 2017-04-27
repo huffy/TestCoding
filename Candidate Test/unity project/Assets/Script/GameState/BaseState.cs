@@ -21,15 +21,15 @@ namespace Assets.Script.GameState
             protected set;
         }
 
-        public Dictionary<int, BaseContainer> mContainersDic;
-        public List<BaseTrash> mTrashList;
-        public Transform mRootTrashTrans;
+        public Dictionary<int, BaseContainer> ContainersDic;
+        public List<BaseTrash> TrashList;
+        public Transform RootTrashTrans;
 
         public void Init(Dictionary<int, BaseContainer> containersDic, List<BaseTrash> trashList, Transform rootTrashTrans)
         {
-            mContainersDic = containersDic;
-            mTrashList = trashList;
-            mRootTrashTrans = rootTrashTrans;
+            ContainersDic = containersDic;
+            TrashList = trashList;
+            RootTrashTrans = rootTrashTrans;
             InitCompennet();
             InitData();
         }

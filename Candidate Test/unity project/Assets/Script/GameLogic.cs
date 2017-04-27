@@ -20,6 +20,7 @@ namespace Assets.Script
     public class GameLogic : BaseMonoBehaviour
     {
         public float audioTime = 0.5f;
+        public Camera MainCamera, UICamera;
         private BaseState mGamestate;
         private GameStateEnum mCurrentState;
         private Dictionary<int, BaseContainer> mContainersDic;
@@ -50,6 +51,7 @@ namespace Assets.Script
         public override void InitComponent()
         {
             base.InitComponent();
+            ControlManager.instance.InitCamera(MainCamera, UICamera);
             mContainersDic = new Dictionary<int, BaseContainer>((int)ContainerEnum.Max);
             mTrashList = new List<BaseTrash>(StaticMemberMgr.MAX_TRASH);
             string path = StaticMemberMgr.SCENE_CONTAINERS_PATH;
@@ -68,6 +70,9 @@ namespace Assets.Script
             base.InitListener();
         }
 
+        /// <summary>
+        /// 初始化数据
+        /// </summary>
         public override void InitData()
         {
             base.InitData();
@@ -197,6 +202,11 @@ namespace Assets.Script
         }
         #endregion
 
+        /// <summary>
+        /// switch game step 
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
         public BaseState SwitchState(GameStateEnum state)
         {
             switch (state)

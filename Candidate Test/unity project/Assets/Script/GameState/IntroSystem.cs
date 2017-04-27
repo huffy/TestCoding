@@ -10,7 +10,13 @@ namespace Assets.Script.GameState
 {
     public class IntroSystem : BaseState
     {
-    
+
+        private enum IntroStateEnum
+        {
+            MoveContainer,
+            Finish,
+        }
+
         public override GameStateEnum CurrentState
         {
             get
@@ -19,6 +25,8 @@ namespace Assets.Script.GameState
             }
         }
 
+        private IntroStateEnum mCurrentIntroState;
+
         public override void InitCompennet()
         {
         }
@@ -26,12 +34,42 @@ namespace Assets.Script.GameState
         public override void InitData()
         {
             ControlManager.instance.CanControl = false;
-
+            mCurrentIntroState = IntroStateEnum.MoveContainer;
         }
 
         public override void Update()
         {
+            switch (mCurrentIntroState)
+            {
+                case IntroStateEnum.MoveContainer:
+                    CheckMoveFinish();
+                    break;
+                case IntroStateEnum.Finish:
+                    Finish();
+                    break;
+            }
         }
 
+
+        private void CheckMoveFinish()
+        {
+            bool bFinish = true;
+            using (var container = ContainersDic.GetEnumerator())
+            {
+                while (container.MoveNext())
+                {
+                    bFinish &= container.Current.Value.RotateStart;
+                }
+            }
+            if (bFinish)
+            {
+                mCurrentIntroState = IntroStateEnum.Finish;
+            }
+        }
+
+        private void Finish()
+        {
+            NextState = CurrentState + 1;
+        }
     }
 }

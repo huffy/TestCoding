@@ -41,8 +41,13 @@ namespace Assets.Script.Container
             }
         }
 
-    
-
+        public bool RotateStart
+        {
+            get
+            {
+                return bCantRotate;
+            }
+        }
         #endregion
 
         #region Component
@@ -135,13 +140,9 @@ namespace Assets.Script.Container
         {
             if (bCantRotate)
             {
-                if ((int)CacheTrans.localEulerAngles.y != realAngle)
+                if (Mathf.Abs((int)CacheTrans.localEulerAngles.y - realAngle) > 1)
                 {
-                    tempVector = Vector3.up * Time.deltaTime * RotateSpeed;
-                    if (Angle < 0)
-                    {
-                        tempVector *= -1;
-                    }
+                    tempVector = Vector3.down * Time.deltaTime * RotateSpeed;
                     CacheTrans.Rotate(tempVector);
                 }
                 else

@@ -16,14 +16,23 @@ namespace Assets.Script.Tools
     public class GameHelper : TSingleton<GameHelper>, IDisposable
     {
 
-        public Camera mainCamera;
+        public Camera MainCamera;
         public delegate void DoSomeHandle(EventNoticeParam param);
+        public Vector3 LeftWallVec;
+        public Vector3 RightWallVec;
+        public Vector3 BottomWallVec;
         private GameObject tempObj;
+        private Transform tempTrans;
+        private List<Vector3> mPositionList;
         public override void Init()
         {
             base.Init();
-            mainCamera = Camera.main;
-            if (mainCamera == null) { DebugHelper.DebugLogError(" MainCamera is Null"); }
+            MainCamera = Camera.main;
+            tempTrans = null;
+            tempObj = null;
+            if (MainCamera == null) { DebugHelper.DebugLogError(" MainCamera is Null"); }
+            InitWallVector();
+            mPositionList = new List<Vector3>();
         }
 
         public void GetTransformByPath(ref Transform trans, string path)
@@ -52,21 +61,78 @@ namespace Assets.Script.Tools
         public Vector3 GetScreenPos(Vector3 pos)
         {
             Vector3 screenPos = Vector3.zero;
-            screenPos = mainCamera.WorldToScreenPoint(pos);
+            screenPos = MainCamera.WorldToScreenPoint(pos);
             return screenPos;
         }
 
         /// <summary>
         /// 判断是否在屏幕内
         /// </summary>
-        private bool InTheArea(Vector3 worldPos, Vector3 wallWolrdPos)
+        public bool InTheArea(Vector3 worldPos)
+        {
+            return InTheArea(worldPos, RightWallVec, 0.5f) && InTheArea(worldPos, LeftWallVec,1.0f)
+                || InTheArea(worldPos, RightWallVec, 1.0f) && InTheArea(worldPos, LeftWallVec, 0.5f);
+        }
+
+        /// <summary>
+        /// 判断是否在屏幕内
+        /// </summary>
+        public bool InTheArea(Vector3 worldPos, Vector3 wallWolrdPos,float offset)
         {
             Vector2 screenPos = GetScreenPos(worldPos);
             Vector2 wallPos = GetScreenPos(wallWolrdPos);
-            if (Mathf.Abs(screenPos.x - wallPos.x) < Screen.width * 0.5f)
+            if (Mathf.Abs(screenPos.x - wallPos.x) < Screen.width * offset)
+            {
+                return true;
+            }
+            else
             {
                 return false;
             }
+        }
+
+        /// <summary>
+        /// 是否到达地面
+        /// </summary>
+        /// <param name="worldPos"></param>
+        /// <param name="wallWolrdPos"></param>
+        /// <param name="maxOffset">Random but != maxOffset</param>
+        /// <returns></returns>
+        public bool UnderGround(Vector3 worldPos, float maxOffset)
+        {
+            return UnderGround(worldPos, BottomWallVec, maxOffset);
+        }
+
+        /// <summary>
+        /// 是否到达地面
+        /// </summary>
+        /// <param name="worldPos"></param>
+        /// <param name="wallWolrdPos"></param>
+        /// <param name="maxOffset">Random but != maxOffset</param>
+        /// <returns></returns>
+        public bool UnderGround(Vector3 worldPos, Vector3 wallWolrdPos, float maxOffset)
+        {
+            float offset = UnityEngine.Random.Range(0, maxOffset);
+            if (worldPos.y - offset < wallWolrdPos.y)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool IsValidPos(Vector3 pos, float minDistance)
+        {
+            for (int i = 0; i < mPositionList.Count; i++)
+            {
+                if (Mathf.Abs(pos.x - mPositionList[i].x) < minDistance)
+                {
+                    return false;
+                }
+            }
+            mPositionList.Add(pos);
             return true;
         }
 
@@ -163,9 +229,28 @@ namespace Assets.Script.Tools
 
         public override void Dispose()
         {
+            tempTrans = null;
+            tempObj = null;
             base.Dispose();
         }
 
-
+        private void InitWallVector()
+        {
+            GetTransformByPath(ref tempTrans, StaticMemberMgr.WALL_LEFT_PATH);
+            if (tempTrans != null)
+            {
+                LeftWallVec = tempTrans.position;
+            }
+            GetTransformByPath(ref tempTrans, StaticMemberMgr.WALL_RIGHT_PATH);
+            if (tempTrans != null)
+            {
+                RightWallVec = tempTrans.position;
+            }
+            GetTransformByPath(ref tempTrans, StaticMemberMgr.WALL_BOTTOM_PATH);
+            if (tempTrans != null)
+            {
+                BottomWallVec = tempTrans.position;
+            }
+        }
     }
 }
