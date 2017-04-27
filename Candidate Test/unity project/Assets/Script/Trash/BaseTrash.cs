@@ -6,6 +6,22 @@ namespace Assets.Script.Trash
 {
     public class BaseTrash : BaseCreator
     {
+
+        public override void InitComponent()
+        {
+            base.InitComponent();
+        }
+
+        public override void InitData()
+        {
+            base.InitData();
+        }
+
+        public override void Update()
+        {
+            base.Update();
+        }
+
         public override void SetBaseCreator(BaseCreator creator)
         {
             base.SetBaseCreator(creator);
@@ -14,5 +30,11 @@ namespace Assets.Script.Trash
         public override void LogicCollision(BaseCreator creator)
         {
         }
+
+        public void TrashDrop()
+        {
+
+        }
+
     }
 }

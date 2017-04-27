@@ -9,40 +9,32 @@ using UnityEngine;
 
 namespace Assets.Script.GameState
 {
-    public class BaseState
+    public abstract class BaseState
     {
-        public virtual GameStateEnum CurrentState
+        public abstract GameStateEnum CurrentState
         {
-            get
-            {
-                return GameStateEnum.None;
-            }
+            get;
         }
-        public Dictionary<int, BaseContainer> mContainers;
+        public GameStateEnum NextState
+        {
+            get;
+            protected set;
+        }
+
+        public Dictionary<int, BaseContainer> mContainersDic;
         public List<BaseTrash> mTrashList;
         public Transform mRootTrashTrans;
 
-        public void Init(Dictionary<int, BaseContainer> containers, List<BaseTrash> trashList, Transform rootTrashTrans)
+        public void Init(Dictionary<int, BaseContainer> containersDic, List<BaseTrash> trashList, Transform rootTrashTrans)
         {
-            mContainers = containers;
+            mContainersDic = containersDic;
             mTrashList = trashList;
             mRootTrashTrans = rootTrashTrans;
             InitCompennet();
             InitData();
         }
-        public virtual void InitCompennet()
-        {
-
-        }
-
-        public virtual void InitData()
-        {
-
-        }
-
-        public BaseState ChangeNextState()
-        {
-            return StateHelper.instance.SwitchState(CurrentState + 1);
-        }
+        public abstract void InitCompennet();
+        public abstract void InitData();
+        public abstract void Update();
     }
 }

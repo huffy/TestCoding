@@ -21,10 +21,12 @@ namespace Assets.Script
     {
         public float audioTime = 0.5f;
         private BaseState mGamestate;
+        private GameStateEnum mCurrentState;
         private Dictionary<int, BaseContainer> mContainersDic;
         private List<BaseTrash> mTrashList;
         private Transform mRootContainerTrans;
         private Transform mRootTrashTrans;
+
         public override void Awake()
         {
             DebugHelper.bEnableDebug = true;
@@ -69,7 +71,8 @@ namespace Assets.Script
         public override void InitData()
         {
             base.InitData();
-            mGamestate = StateHelper.instance.SwitchState(GameStateEnum.Intro);
+            mCurrentState = GameStateEnum.Intro;
+            mGamestate = SwitchState(mCurrentState);
             mGamestate.Init(mContainersDic, mTrashList, mRootTrashTrans);
         }
 
@@ -80,7 +83,6 @@ namespace Assets.Script
         {
             base.RemoveListener();
         }
-
 
         public override void Update()
         {
@@ -93,14 +95,35 @@ namespace Assets.Script
             {
                 ControlManager.instance.Update(Time.deltaTime);
             }
+            if (mGamestate != null)
+            {
+                if (mCurrentState < mGamestate.NextState)
+                {
+                    mCurrentState = mGamestate.NextState;
+                    mGamestate = SwitchState(mCurrentState);
+                    mGamestate.Init(mContainersDic, mTrashList, mRootTrashTrans);
+                }
+                mGamestate.Update();
+            }
+
         }
 
         public override void OnDestroy()
         {
+            base.OnDestroy();
             ControlManager.DestroyInstance();
             GameHelper.DestroyInstance();
             ControlManager.DestroyInstance();
-            base.OnDestroy();
+            Dispose();
+        }
+
+        private void Dispose()
+        {
+            mContainersDic.Clear();
+            mContainersDic = null;
+            mTrashList.Clear();
+            mTrashList = null;
+            mGamestate = null;
         }
 
         #region container
@@ -173,5 +196,20 @@ namespace Assets.Script
             }
         }
         #endregion
+
+        public BaseState SwitchState(GameStateEnum state)
+        {
+            switch (state)
+            {
+                case GameStateEnum.Intro:
+                    return new IntroSystem();
+                case GameStateEnum.PlayGame:
+                    return new PlayGameSystem();
+                case GameStateEnum.End:
+                    return new PlayGameSystem();
+            }
+            DebugHelper.DebugLogError(" state is error ==" + state);
+            return null;
+        }
     }
 }

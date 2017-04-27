@@ -15,9 +15,24 @@ namespace Assets.Script.Base
 {
     public class BaseMonoBehaviour : MonoBehaviour
     {
+        // cache gameobject 
+        public GameObject CacheObj
+        {
+            get;
+            private set;
+        }
+
+        // cache transform 
+        public Transform CacheTrans
+        {
+            get;
+            private set;
+        }
 
         public virtual void Awake()
         {
+            CacheObj = gameObject;
+            CacheTrans = transform;
             Init();
         }
 

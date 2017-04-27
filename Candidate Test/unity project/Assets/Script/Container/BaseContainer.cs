@@ -3,6 +3,7 @@ using System.Collections;
 using Assets.Script.Base;
 using System;
 using Assets.Script.Tools;
+using System.Collections.Generic;
 
 namespace Assets.Script.Container
 {
@@ -40,41 +41,33 @@ namespace Assets.Script.Container
             }
         }
 
-        public GameObject cacheObj
-        {
-            get;
-            private set;
-        }
-        public Transform cacheTrans
-        {
-            get;
-            private set;
-        }
+    
 
         #endregion
 
         #region Component
         private Transform parentTrans;
-        private Animation anim;
+        private Animation mAnim;
         private int realAngle;
         private Vector3 tempVector;
         private GameObject tempObj;
         #endregion
 
         private bool bCantRotate;
+        private Queue<BinAnimationEnum> mAnimationQueue;
 
         public override void InitComponent()
         {
             base.InitComponent();
-            cacheObj = gameObject;
-            cacheTrans = transform;
-            anim = GetComponent<Animation>();
-            if (anim == null)
+         
+            mAnim = GetComponent<Animation>();
+            if (mAnim == null)
             {
-                anim = cacheObj.AddComponent<Animation>();
+                mAnim = CacheObj.AddComponent<Animation>();
             }
             string parentPath = string.Format(StaticMemberMgr.SCENE_CONTAINERS_PATH+ "/{0}", ParentName);
             GameHelper.instance.GetTransformByPath(ref parentTrans, parentPath);
+            mAnimationQueue = new Queue<BinAnimationEnum>();
         }
 
         public override void InitData()
@@ -82,22 +75,10 @@ namespace Assets.Script.Container
             base.InitData();
             bCantRotate = false;
             realAngle = (StaticMemberMgr.MAX_ANGLE + Angle) % StaticMemberMgr.MAX_ANGLE;
+            PlayAnimtion(BinAnimationEnum.BinClose);
             PlayAnimtion(BinAnimationEnum.BinRollIn);
-        }
-
-        public void PlayAnimtion(BinAnimationEnum mAnimationType)
-        {
-            anim.Play(mAnimationType.ToString());
-        }
-
-        public void PlaySound()
-        {
-
-        }
-
-        public void StartRotate()
-        {
-            bCantRotate = true;
+            PlayAnimtion(BinAnimationEnum.BinOpen);
+            PlayAnimtion(BinAnimationEnum.BinClose);
         }
 
         public override void Update()
@@ -107,24 +88,8 @@ namespace Assets.Script.Container
             {
                 return;
             }
-            if (bCantRotate)
-            {
-                if ((int)cacheTrans.localEulerAngles.y != realAngle)
-                {
-                    tempVector = Vector3.up * Time.deltaTime * RotateSpeed;
-                    if (Angle < 0)
-                    {
-                        tempVector *= -1;
-                    }
-
-                    cacheTrans.Rotate(tempVector);
-                }
-                else
-                {
-                    bCantRotate = false;
-
-                }
-            }
+            CheckRotate();
+            PlayQueueAnimation();
         }
 
         public override void SetBaseCreator(BaseCreator creator)
@@ -137,5 +102,66 @@ namespace Assets.Script.Container
         }
 
 
+        public void PlayAnimtion(BinAnimationEnum mAnimationType)
+        {
+            if (mAnim == null)
+            {
+                return;
+            }
+
+            if (mAnim.isPlaying)
+            {
+                mAnimationQueue.Enqueue(mAnimationType);
+            }
+            else
+            {
+                mAnim.Play(mAnimationType.ToString());
+            }
+
+        }
+
+        public void PlaySound()
+        {
+
+        }
+
+        public void StartRotate()
+        {
+            bCantRotate = true;
+        }
+
+        #region private 
+        private void CheckRotate()
+        {
+            if (bCantRotate)
+            {
+                if ((int)CacheTrans.localEulerAngles.y != realAngle)
+                {
+                    tempVector = Vector3.up * Time.deltaTime * RotateSpeed;
+                    if (Angle < 0)
+                    {
+                        tempVector *= -1;
+                    }
+                    CacheTrans.Rotate(tempVector);
+                }
+                else
+                {
+                    bCantRotate = false;
+                }
+            }
+        }
+
+        private void PlayQueueAnimation()
+        {
+            if (mAnimationQueue.Count > 0)
+            {
+                if (mAnim.isPlaying == false)
+                {
+                    BinAnimationEnum animType = mAnimationQueue.Dequeue();
+                    mAnim.Play(animType.ToString());
+                }
+            }
+        }
+        #endregion
     }
 }

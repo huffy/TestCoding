@@ -8,6 +8,7 @@ public class ControlManager : TSingleton<ControlManager>, IDisposable
     #region private
     private Camera cam;
     #endregion
+    public bool CanControl;
     public override void Init()
     {
         base.Init();
@@ -25,6 +26,7 @@ public class ControlManager : TSingleton<ControlManager>, IDisposable
 
     public void InitData()
     {
+        CanControl = true;
     }
 
     /// <summary>
@@ -43,6 +45,11 @@ public class ControlManager : TSingleton<ControlManager>, IDisposable
     public override void Update(float time)
     {
         base.Update(time);
+        if (CanControl == false)
+        {
+            return;
+        }
+
         if (Application.platform == RuntimePlatform.WindowsEditor || Application.platform == RuntimePlatform.WindowsPlayer)
         {
             if (Input.GetMouseButton(0))

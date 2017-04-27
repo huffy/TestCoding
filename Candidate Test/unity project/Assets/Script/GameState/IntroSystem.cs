@@ -21,14 +21,17 @@ namespace Assets.Script.GameState
 
         public override void InitCompennet()
         {
-            base.InitCompennet();
         }
 
         public override void InitData()
         {
-            base.InitData();
+            ControlManager.instance.CanControl = false;
+
         }
 
+        public override void Update()
+        {
+        }
 
     }
 }
