@@ -13,6 +13,7 @@ public class ControlManager : TSingleton<ControlManager>, IDisposable
     private Camera cam;
     private BaseTrash mSelectTrash;
     private int mTrashLayerIndex;
+    private float mMaxMoveHeight;
     #endregion
 
     public override void Init()
@@ -43,6 +44,7 @@ public class ControlManager : TSingleton<ControlManager>, IDisposable
         CanControl = true;
         IsTouch = false;
         mTrashLayerIndex = 8;
+        mMaxMoveHeight = 1;
     }
 
     /// <summary>
@@ -86,7 +88,7 @@ public class ControlManager : TSingleton<ControlManager>, IDisposable
                 IsTouch = false;
                 mSelectTrash.ReleaseTrash();
                 mSelectTrash = null;
-               
+
             }
         }
 
@@ -109,8 +111,8 @@ public class ControlManager : TSingleton<ControlManager>, IDisposable
         {
             newPosition = Camera.main.WorldToScreenPoint(mSelectTrash.CacheTrans.position);
             pos.z = newPosition.z;
-            newPosition.x = cam.ScreenToWorldPoint(pos).x;// + offset.x;
-            newPosition.y = cam.ScreenToWorldPoint(pos).y;// + offset.y;
+            newPosition.x = cam.ScreenToWorldPoint(pos).x;
+            newPosition.y = Mathf.Min(cam.ScreenToWorldPoint(pos).y, mMaxMoveHeight);
             newPosition.z = mSelectTrash.CacheTrans.position.z;
             if (GameHelper.instance.InTheArea(newPosition) && GameHelper.instance.UnderGround(newPosition, 0) == false)
             {
@@ -124,7 +126,7 @@ public class ControlManager : TSingleton<ControlManager>, IDisposable
         RaycastHit hit;
         Ray ray = cam.ScreenPointToRay(pos);
 
-        if (Physics.Raycast(ray, out hit,100, 1 << mTrashLayerIndex))
+        if (Physics.Raycast(ray, out hit, 100, 1 << mTrashLayerIndex))
         {
             return hit.transform.GetComponent<BaseTrash>();
         }

@@ -1,5 +1,8 @@
-Initial Game    4/25 21£º00 - 4/26 0£º16    3hrs
-Intro           4/26 20£º30 - 4/26 23:00    2.5hrs
-PlayGame        4/27 14£º30 - 4/27 16:00    1.5hrs
-PlayGame        4/27 20£º30 - 4/27 23:30    3hrs
-PlayGame        4/28 15£º40 - 4/28 18:00    2.3hrs
+Initial Game    4/25 21£º00 - 4/26 0£º16    3 hrs
+Intro           4/26 20£º30 - 4/26 23:00    2.5 hrs
+PlayGame        4/27 14£º30 - 4/27 16:00    1.5 hrs
+PlayGame        4/27 20£º30 - 4/27 23:30    3 hrs
+PlayGame        4/28 15£º40 - 4/28 18:00    2.3 hrs
+End and Debug   4/28 20£º40 - 4/29 1:00     4.3 hrs
+
+total : 16.6hrs
