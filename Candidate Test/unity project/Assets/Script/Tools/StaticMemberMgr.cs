@@ -13,6 +13,7 @@ namespace Assets.Script.Tools
         public const string WALL_LEFT_PATH = "Wall/LeftWall";
         public const string WALL_RIGHT_PATH = "Wall/RightWall";
         public const string WALL_BOTTOM_PATH = "Wall/BottomWall";
+        public const string SCENE_OBJ_NAME = "SceneObj";
 
         public const string SOUND_RESOURCE_PATH = "Sounds/{0}/{1}";
 

@@ -20,7 +20,7 @@ namespace Assets.Script.Trash
         {
             get
             {
-                return 0.65f;
+                return 0.23f;
             }
         }
 
@@ -37,6 +37,14 @@ namespace Assets.Script.Trash
             get
             {
                 return 0.1f;
+            }
+        }
+
+        public override SoundEnum TrashInCountainerSound
+        {
+            get
+            {
+                return SoundEnum.TrashintheBinGlass;
             }
         }
 

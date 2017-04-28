@@ -36,5 +36,6 @@ namespace Assets.Script.GameState
         public abstract void InitCompennet();
         public abstract void InitData();
         public abstract void Update();
+        public abstract void Dispose();
     }
 }

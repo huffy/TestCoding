@@ -8,11 +8,11 @@ public class ControlManager : TSingleton<ControlManager>, IDisposable
 {
 
     public bool CanControl;
-
+    public bool IsTouch;
     #region private
     private Camera cam;
-    private BaseTrash selectTrash;
-    private int trashLayerIndex;
+    private BaseTrash mSelectTrash;
+    private int mTrashLayerIndex;
     #endregion
 
     public override void Init()
@@ -25,17 +25,24 @@ public class ControlManager : TSingleton<ControlManager>, IDisposable
     public override void Dispose()
     {
         base.Dispose();
+        mSelectTrash = null;
         RemoveListener();
     }
 
     public void InitComponent()
     {
+        if (Application.platform == RuntimePlatform.Android
+            || Application.platform == RuntimePlatform.IPhonePlayer)
+        {
+            Input.multiTouchEnabled = false;
+        }
     }
 
     public void InitData()
     {
         CanControl = true;
-        trashLayerIndex = 8;
+        IsTouch = false;
+        mTrashLayerIndex = 8;
     }
 
     /// <summary>
@@ -65,18 +72,21 @@ public class ControlManager : TSingleton<ControlManager>, IDisposable
         }
         if (Input.GetMouseButtonDown(0))
         {
-            selectTrash = HitTrash(PlatformTools.m_TouchPosition);
-            if (selectTrash)
+            mSelectTrash = HitTrash(PlatformTools.m_TouchPosition);
+            if (mSelectTrash)
             {
-                selectTrash.PickUpTrash();
+                IsTouch = true;
+                mSelectTrash.PickUpTrash();
             }
         }
         else if (Input.GetMouseButtonUp(0))
         {
-            if (selectTrash)
+            if (mSelectTrash)
             {
-                selectTrash.ReleaseTrash();
-                selectTrash = null;
+                IsTouch = false;
+                mSelectTrash.ReleaseTrash();
+                mSelectTrash = null;
+               
             }
         }
 
@@ -86,6 +96,7 @@ public class ControlManager : TSingleton<ControlManager>, IDisposable
         }
     }
 
+
     #region fuc
 
     /// <summary>
@@ -94,16 +105,16 @@ public class ControlManager : TSingleton<ControlManager>, IDisposable
     private void MouseMove(Vector3 pos)
     {
         Vector3 newPosition = Vector3.zero;
-        if (selectTrash != null)
+        if (mSelectTrash != null)
         {
-            newPosition = Camera.main.WorldToScreenPoint(selectTrash.CacheTrans.position);
+            newPosition = Camera.main.WorldToScreenPoint(mSelectTrash.CacheTrans.position);
             pos.z = newPosition.z;
             newPosition.x = cam.ScreenToWorldPoint(pos).x;// + offset.x;
             newPosition.y = cam.ScreenToWorldPoint(pos).y;// + offset.y;
-            newPosition.z = selectTrash.CacheTrans.position.z;
+            newPosition.z = mSelectTrash.CacheTrans.position.z;
             if (GameHelper.instance.InTheArea(newPosition) && GameHelper.instance.UnderGround(newPosition, 0) == false)
             {
-                selectTrash.CacheTrans.position = newPosition;
+                mSelectTrash.CacheTrans.position = newPosition;
             }
         }
     }
@@ -113,7 +124,7 @@ public class ControlManager : TSingleton<ControlManager>, IDisposable
         RaycastHit hit;
         Ray ray = cam.ScreenPointToRay(pos);
 
-        if (Physics.Raycast(ray, out hit,100, 1 << trashLayerIndex))
+        if (Physics.Raycast(ray, out hit,100, 1 << mTrashLayerIndex))
         {
             return hit.transform.GetComponent<BaseTrash>();
         }

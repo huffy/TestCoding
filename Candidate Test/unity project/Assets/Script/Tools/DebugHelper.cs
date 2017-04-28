@@ -7,7 +7,7 @@
 using UnityEngine;
 public class DebugHelper
 {
-    public static bool bEnableDebug = true;
+    public static bool bEnableDebug = false;
 
     public static void DebugLog(string str)
     {

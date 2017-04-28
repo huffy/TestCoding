@@ -32,7 +32,8 @@ namespace Assets.Script.Tools
     public enum EventDefineEnum
     {
        PickUpTrash,
-       ReleaseTrash,     
+       ReleaseTrash,
+       TrashInContainer,
     }
 
     public enum SoundEnum
@@ -46,5 +47,18 @@ namespace Assets.Script.Tools
         TrashintheBinPlastics,
         TrashintheBinPaper,
         TrashintheBinGlass,
+    }
+
+    public enum ColliderStateEnum
+    {
+        Enter,
+        Stay,
+        Exit,
+    }
+
+    public enum ActorTypeEnum
+    {
+        Cotainer,
+        Trash,
     }
 }

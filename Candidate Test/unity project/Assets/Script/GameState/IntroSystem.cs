@@ -50,6 +50,10 @@ namespace Assets.Script.GameState
             }
         }
 
+        public override void Dispose()
+        {
+        }
+
 
         private void CheckMoveFinish()
         {
@@ -58,7 +62,7 @@ namespace Assets.Script.GameState
             {
                 while (container.MoveNext())
                 {
-                    bFinish &= container.Current.Value.RotateStart;
+                    bFinish &= container.Current.Value.IntroFinish;
                 }
             }
             if (bFinish)

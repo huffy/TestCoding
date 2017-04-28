@@ -27,7 +27,6 @@ namespace Assets.Script.Tools
         public override void Init()
         {
             base.Init();
-            MainCamera = Camera.main;
             tempTrans = null;
             tempObj = null;
             if (MainCamera == null) { DebugHelper.DebugLogError(" MainCamera is Null"); }
@@ -35,9 +34,14 @@ namespace Assets.Script.Tools
             mPositionList = new List<Vector3>();
         }
 
+        public void InitCamera(Camera mainCamera)
+        {
+            MainCamera = mainCamera;
+        }
+
         public void GetTransformByPath(ref Transform trans, string path)
         {
-             GetGameObjByPath(ref tempObj, path);
+            GetGameObjByPath(ref tempObj, path);
             if (tempObj != null)
             { trans = tempObj.transform; }
             else
@@ -50,7 +54,7 @@ namespace Assets.Script.Tools
         {
             obj = GameObject.Find(path);
             if (obj == null)
-            { 
+            {
                 DebugHelper.DebugLogError("GameObjByPath error path = " + path);
             }
         }
@@ -70,26 +74,9 @@ namespace Assets.Script.Tools
         /// </summary>
         public bool InTheArea(Vector3 worldPos)
         {
-            return InTheArea(worldPos, RightWallVec, 0.5f) && InTheArea(worldPos, LeftWallVec,1.0f)
-                || InTheArea(worldPos, RightWallVec, 1.0f) && InTheArea(worldPos, LeftWallVec, 0.5f);
+            return worldPos.x < (RightWallVec.x - 0.05f) && worldPos.x > (LeftWallVec.x + 0.05f);
         }
 
-        /// <summary>
-        /// 判断是否在屏幕内
-        /// </summary>
-        public bool InTheArea(Vector3 worldPos, Vector3 wallWolrdPos,float offset)
-        {
-            Vector2 screenPos = GetScreenPos(worldPos);
-            Vector2 wallPos = GetScreenPos(wallWolrdPos);
-            if (Mathf.Abs(screenPos.x - wallPos.x) < Screen.width * offset)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
 
         /// <summary>
         /// 是否到达地面
@@ -198,16 +185,6 @@ namespace Assets.Script.Tools
             }
         }
 
-
-        public string GetPrefabPath(string name, string path = "")
-        {
-            //string mPath = "";
-            if (string.IsNullOrEmpty(path))
-                return  string.Format("Prefab/{0}", name);
-            else
-                return string.Format("Prefab/{0}/{1}", path, name);
-        }
-
         /// <summary>
         /// 延迟做
         /// </summary>
@@ -218,7 +195,7 @@ namespace Assets.Script.Tools
         {
             if (DelayTime <= 0)
             {
-                yield return new  WaitForEndOfFrame();
+                yield return new WaitForEndOfFrame();
             }
             else
             {
@@ -231,6 +208,11 @@ namespace Assets.Script.Tools
         {
             tempTrans = null;
             tempObj = null;
+            if (mPositionList != null)
+            {
+                mPositionList.Clear();
+            }
+            mPositionList = null;
             base.Dispose();
         }
 

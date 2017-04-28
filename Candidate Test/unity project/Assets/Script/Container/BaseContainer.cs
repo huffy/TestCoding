@@ -5,6 +5,7 @@ using System;
 using Assets.Script.Tools;
 using System.Collections.Generic;
 using Assets.Script.EventMgr;
+using Assets.Script.AudioMgr;
 
 namespace Assets.Script.Container
 {
@@ -41,11 +42,11 @@ namespace Assets.Script.Container
             }
         }
 
-        public bool RotateStart
+        public bool IntroFinish
         {
             get
             {
-                return bCantRotate;
+                return bIntroFinish;
             }
         }
 
@@ -56,31 +57,41 @@ namespace Assets.Script.Container
                 return ContainerEnum.Food;
             }
         }
+      
+        public override ActorTypeEnum mActorType
+        {
+            get
+            {
+                return ActorTypeEnum.Cotainer;
+            }
+        }
+
 
         #endregion
 
         #region Component
-        private Transform parentTrans;
+        private Transform mParentTrans;
         private Animation mAnim;
-        private int realAngle;
-        private Vector3 tempVector;
-        private GameObject tempObj;
         #endregion
 
+        private int mRealAngle;
+        private Vector3 mTempVector;
         private bool bCantRotate;
+        private bool bIntroFinish;
         private Queue<BinAnimationEnum> mAnimationQueue;
+        private bool firstSound;
 
         public override void InitComponent()
         {
             base.InitComponent();
-         
+
             mAnim = GetComponent<Animation>();
             if (mAnim == null)
             {
                 mAnim = CacheObj.AddComponent<Animation>();
             }
-            string parentPath = string.Format(StaticMemberMgr.SCENE_CONTAINERS_PATH+ "/{0}", ParentName);
-            GameHelper.instance.GetTransformByPath(ref parentTrans, parentPath);
+            string parentPath = string.Format(StaticMemberMgr.SCENE_CONTAINERS_PATH + "/{0}", ParentName);
+            GameHelper.instance.GetTransformByPath(ref mParentTrans, parentPath);
             mAnimationQueue = new Queue<BinAnimationEnum>();
         }
 
@@ -88,7 +99,8 @@ namespace Assets.Script.Container
         {
             base.InitData();
             bCantRotate = false;
-            realAngle = (StaticMemberMgr.MAX_ANGLE + Angle) % StaticMemberMgr.MAX_ANGLE;
+            firstSound = true;
+            mRealAngle = (StaticMemberMgr.MAX_ANGLE + Angle) % StaticMemberMgr.MAX_ANGLE;
             PlayAnimtion(BinAnimationEnum.BinClose);
             PlayAnimtion(BinAnimationEnum.BinRollIn);
             PlayAnimtion(BinAnimationEnum.BinOpen);
@@ -112,7 +124,7 @@ namespace Assets.Script.Container
         public override void Update()
         {
             base.Update();
-            if (parentTrans == null)
+            if (mParentTrans == null)
             {
                 return;
             }
@@ -125,12 +137,33 @@ namespace Assets.Script.Container
             base.SetBaseCreator(creator);
         }
 
-        public override void LogicCollision(BaseCreator creator)
+        /// <summary>
+        /// collision
+        /// </summary>
+        /// <param name="creator">主动来撞的</param>
+        /// <param name="colliderState"></param>
+        public override void LogicCollision(BaseCreator creator, ColliderStateEnum colliderState)
         {
+            if (creator.mActorType == ActorTypeEnum.Trash)
+            {
+                creator.Dispose();
+                creator.gameObject.CustomSetActive(false);
+                EventManager.instance.RasieEvent(EventDefineEnum.TrashInContainer, creator, null);
+                PlayAnimtion(BinAnimationEnum.BinClose, true);
+            }
         }
 
+        public override void Dispose()
+        {
+            mCreator = null;
+            mParentTrans = null;
+            mAnim = null;
+            RemoveListener();
+            mAnimationQueue.Clear();
+            mAnimationQueue = null;
+        }
 
-        public void PlayAnimtion(BinAnimationEnum mAnimationType)
+        public void PlayAnimtion(BinAnimationEnum animationType, bool forcePlay = false)
         {
             if (mAnim == null)
             {
@@ -139,18 +172,32 @@ namespace Assets.Script.Container
 
             if (mAnim.isPlaying)
             {
-                mAnimationQueue.Enqueue(mAnimationType);
+                if (forcePlay)
+                {
+                    mAnim.Stop();
+                    mAnimationQueue.Clear();
+                    mAnim.Play(animationType.ToString());
+                }
+                else
+                {
+                    mAnimationQueue.Enqueue(animationType);
+                }
             }
             else
             {
-                mAnim.Play(mAnimationType.ToString());
+                mAnim.Play(animationType.ToString());
             }
 
         }
-
-        public void PlaySound()
+         
+        public override void PlayGameSound(SoundEnum soundType)
         {
-
+            if (firstSound && soundType == SoundEnum.CloseBin)
+            {
+                firstSound = false;
+                return;
+            }
+            AudioControl.instance.PlayAudio((int)soundType);
         }
 
         public void StartRotate()
@@ -164,7 +211,7 @@ namespace Assets.Script.Container
             ContainerTypeParam type = (ContainerTypeParam)e;
             if (ContainerType == type.ContainerType)
             {
-                PlayAnimtion(BinAnimationEnum.BinClose);
+                PlayAnimtion(BinAnimationEnum.BinClose, true);
             }
         }
 
@@ -173,7 +220,7 @@ namespace Assets.Script.Container
             ContainerTypeParam type = (ContainerTypeParam)e;
             if (ContainerType == type.ContainerType)
             {
-                PlayAnimtion(BinAnimationEnum.BinOpen);
+                PlayAnimtion(BinAnimationEnum.BinOpen, true);
             }
         }
         #endregion
@@ -183,10 +230,10 @@ namespace Assets.Script.Container
         {
             if (bCantRotate)
             {
-                if (Mathf.Abs((int)CacheTrans.localEulerAngles.y - realAngle) > 1)
+                if (Mathf.Abs((int)CacheTrans.localEulerAngles.y - mRealAngle) > 1)
                 {
-                    tempVector = Vector3.down * Time.deltaTime * RotateSpeed;
-                    CacheTrans.Rotate(tempVector);
+                    mTempVector = Vector3.down * Time.deltaTime * RotateSpeed;
+                    CacheTrans.Rotate(mTempVector);
                 }
                 else
                 {
@@ -205,7 +252,15 @@ namespace Assets.Script.Container
                     mAnim.Play(animType.ToString());
                 }
             }
+            else
+            {
+                if (bIntroFinish == false)
+                {
+                    bIntroFinish = !bIntroFinish;
+                }
+            }
         }
         #endregion
+
     }
 }

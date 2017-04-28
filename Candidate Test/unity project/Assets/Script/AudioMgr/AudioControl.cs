@@ -16,7 +16,7 @@ namespace Assets.Script.AudioMgr
     public class AudioControl : TSingleton<AudioControl>, IDisposable
     {
 
-        struct AudioParam
+        private struct AudioParam
         {
             public AudioSource mAudioSource;
             public bool bMute;
@@ -46,7 +46,10 @@ namespace Assets.Script.AudioMgr
         public override void Dispose()
         {
             base.Dispose();
-            mAudioDic.Clear();
+            if (mAudioDic != null) mAudioDic.Clear();
+            mAudioDic = null;
+            if (AudioParamList != null) AudioParamList.Clear();
+            AudioParamList = null;
         }
 
         public override void Update(float time)
@@ -342,13 +345,13 @@ namespace Assets.Script.AudioMgr
         /// </summary>
         private AudioSource GetAudioSoure(bool isBGM)
         {
-            if (isBGM)
+            //if (isBGM)
+            //{
+            //    return mAudioSourceArr[0];
+            //}
+            //else
             {
-                return mAudioSourceArr[0];
-            }
-            else
-            {
-                for (int i = 1; i < mAudioSourceArr.Length; i++)
+                for (int i = 0; i < mAudioSourceArr.Length; i++)
                 {
                     if (mAudioSourceArr[i].isPlaying == false)
                     {

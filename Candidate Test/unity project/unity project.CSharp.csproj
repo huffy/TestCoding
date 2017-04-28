@@ -13,11 +13,13 @@
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>Unity Subset v3.5</TargetFrameworkProfile>
-    <CompilerResponseFile></CompilerResponseFile>
+    <CompilerResponseFile>
+    </CompilerResponseFile>
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows:5</UnityBuildTarget>
     <UnityVersion>5.4.1f1</UnityVersion>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <LangVersion Condition=" '$(VisualStudioVersion)' != '10.0' ">4</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -71,12 +73,13 @@
     <Compile Include="Assets\Script\Container\BaseContainer.cs" />
     <Compile Include="Assets\Script\Container\FoodContainer.cs" />
     <Compile Include="Assets\Script\Container\GlassContainer.cs" />
+    <Compile Include="Assets\Script\ContainerKind.cs" />
     <Compile Include="Assets\Script\Container\PaperContainer.cs" />
     <Compile Include="Assets\Script\Container\PlasticContainer.cs" />
     <Compile Include="Assets\Script\ControlManager.cs" />
     <Compile Include="Assets\Script\EventMgr\EventHelpr.cs" />
     <Compile Include="Assets\Script\EventMgr\EventManager.cs" />
-    <Compile Include="Assets\Script\EventMgr\EventNoticeParam.cs" />
+    <Compile Include="Assets\Script\EventMgr\EventParam.cs" />
     <Compile Include="Assets\Script\EventMgr\TSimpleNotifier.cs" />
     <Compile Include="Assets\Script\GameLogic.cs" />
     <Compile Include="Assets\Script\GameState\BaseState.cs" />
@@ -86,11 +89,9 @@
     <Compile Include="Assets\Script\Timer\CTimer.cs" />
     <Compile Include="Assets\Script\Timer\CTimerManager.cs" />
     <Compile Include="Assets\Script\Tools\DebugHelper.cs" />
-    <Compile Include="Assets\Script\Tools\DynamicPrefabMgr.cs" />
     <Compile Include="Assets\Script\Tools\EnumMgr.cs" />
     <Compile Include="Assets\Script\Tools\Extension.cs" />
     <Compile Include="Assets\Script\Tools\GameHelper.cs" />
-    <Compile Include="Assets\Script\Tools\MoveContorlManager.cs" />
     <Compile Include="Assets\Script\Tools\PlatformTools.cs" />
     <Compile Include="Assets\Script\Tools\StaticMemberMgr.cs" />
     <Compile Include="Assets\Script\Tools\StringHelper.cs" />

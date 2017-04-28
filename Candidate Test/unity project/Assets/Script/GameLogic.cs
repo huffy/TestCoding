@@ -31,7 +31,7 @@ namespace Assets.Script
 
         public override void Awake()
         {
-            DebugHelper.bEnableDebug = true;
+            //DebugHelper.bEnableDebug = true;
             base.Awake();
         }
 
@@ -54,6 +54,7 @@ namespace Assets.Script
         {
             base.InitComponent();
             ControlManager.instance.InitCamera(MainCamera);
+            GameHelper.instance.InitCamera(MainCamera);
             mContainersDic = new Dictionary<int, BaseContainer>((int)ContainerEnum.Max);
             mTrashList = new List<BaseTrash>(StaticMemberMgr.MAX_TRASH);
             string path = StaticMemberMgr.SCENE_CONTAINERS_PATH;
@@ -107,6 +108,7 @@ namespace Assets.Script
                 if (mCurrentState < mGamestate.NextState)
                 {
                     mCurrentState = mGamestate.NextState;
+                    mGamestate.Dispose();
                     mGamestate = SwitchState(mCurrentState);
                     mGamestate.Init(mContainersDic, mTrashList, mRootTrashTrans);
                 }
@@ -127,10 +129,11 @@ namespace Assets.Script
 
         private void Dispose()
         {
-            mContainersDic.Clear();
+            if (mContainersDic != null) mContainersDic.Clear();
             mContainersDic = null;
-            mTrashList.Clear();
+            if (mTrashList != null) mTrashList.Clear();
             mTrashList = null;
+            if (mGamestate != null) mGamestate.Dispose();
             mGamestate = null;
         }
 
@@ -219,7 +222,7 @@ namespace Assets.Script
                 case GameStateEnum.PlayGame:
                     return new PlayGameSystem();
                 case GameStateEnum.End:
-                    return new PlayGameSystem();
+                    return new EndSystem();
             }
             DebugHelper.DebugLogError(" state is error ==" + state);
             return null;

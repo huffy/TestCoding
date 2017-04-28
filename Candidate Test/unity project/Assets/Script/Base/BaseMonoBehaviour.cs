@@ -62,7 +62,6 @@ namespace Assets.Script.Base
 
         public virtual void InitData()
         {
-
         }
 
         /// <summary>
