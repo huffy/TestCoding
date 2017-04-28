@@ -66,6 +66,10 @@ public class ControlManager : TSingleton<ControlManager>, IDisposable
         if (Input.GetMouseButtonDown(0))
         {
             selectTrash = HitTrash(PlatformTools.m_TouchPosition);
+            if (selectTrash)
+            {
+                selectTrash.PickUpTrash();
+            }
         }
         else if (Input.GetMouseButtonUp(0))
         {
