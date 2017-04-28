@@ -99,12 +99,14 @@ namespace Assets.Script.Container
         {
             base.InitListener();
             EventManager.instance.AddListener(EventDefineEnum.ReleaseTrash, ReleaseTrash);
+            EventManager.instance.AddListener(EventDefineEnum.PickUpTrash, PickUpTrash);
         }
 
         public override void RemoveListener()
         {
             base.RemoveListener();
             EventManager.instance.RemoveListener(EventDefineEnum.ReleaseTrash, ReleaseTrash);
+            EventManager.instance.RemoveListener(EventDefineEnum.PickUpTrash, PickUpTrash);
         }
 
         public override void Update()
@@ -158,6 +160,15 @@ namespace Assets.Script.Container
 
         #region event
         private void ReleaseTrash(object obj, EventArgs e)
+        {
+            ContainerTypeParam type = (ContainerTypeParam)e;
+            if (ContainerType == type.ContainerType)
+            {
+                PlayAnimtion(BinAnimationEnum.BinClose);
+            }
+        }
+
+        private void PickUpTrash(object obj, EventArgs e)
         {
             ContainerTypeParam type = (ContainerTypeParam)e;
             if (ContainerType == type.ContainerType)

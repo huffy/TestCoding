@@ -96,6 +96,12 @@ namespace Assets.Script.Trash
             EventManager.instance.RasieEvent(EventDefineEnum.ReleaseTrash, CacheObj, trashType);
         }
 
+        public void PickUpTrash()
+        {
+            ContainerTypeParam trashType = new ContainerTypeParam(TrashType);
+            EventManager.instance.RasieEvent(EventDefineEnum.PickUpTrash, CacheObj, trashType);
+        }
+
         public void StopRigidbody()
         {
             if (mRigidbody)

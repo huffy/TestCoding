@@ -31,7 +31,7 @@ namespace Assets.Script.Tools
 
     public enum EventDefineEnum
     {
-       SelectTrash,
+       PickUpTrash,
        ReleaseTrash,     
     }
 
