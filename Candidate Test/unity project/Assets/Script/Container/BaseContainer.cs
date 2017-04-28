@@ -4,6 +4,7 @@ using Assets.Script.Base;
 using System;
 using Assets.Script.Tools;
 using System.Collections.Generic;
+using Assets.Script.EventMgr;
 
 namespace Assets.Script.Container
 {
@@ -15,7 +16,6 @@ namespace Assets.Script.Container
         #endregion
 
         #region pubilc 
-     
 
         public virtual String ParentName
         {
@@ -48,6 +48,15 @@ namespace Assets.Script.Container
                 return bCantRotate;
             }
         }
+
+        public virtual ContainerEnum ContainerType
+        {
+            get
+            {
+                return ContainerEnum.Food;
+            }
+        }
+
         #endregion
 
         #region Component
@@ -84,6 +93,18 @@ namespace Assets.Script.Container
             PlayAnimtion(BinAnimationEnum.BinRollIn);
             PlayAnimtion(BinAnimationEnum.BinOpen);
             PlayAnimtion(BinAnimationEnum.BinClose);
+        }
+
+        public override void InitListener()
+        {
+            base.InitListener();
+            EventManager.instance.AddListener(EventDefineEnum.ReleaseTrash, ReleaseTrash);
+        }
+
+        public override void RemoveListener()
+        {
+            base.RemoveListener();
+            EventManager.instance.RemoveListener(EventDefineEnum.ReleaseTrash, ReleaseTrash);
         }
 
         public override void Update()
@@ -134,6 +155,17 @@ namespace Assets.Script.Container
         {
             bCantRotate = true;
         }
+
+        #region event
+        private void ReleaseTrash(object obj, EventArgs e)
+        {
+            ContainerTypeParam type = (ContainerTypeParam)e;
+            if (ContainerType == type.ContainerType)
+            {
+                PlayAnimtion(BinAnimationEnum.BinOpen);
+            }
+        }
+        #endregion
 
         #region private 
         private void CheckRotate()

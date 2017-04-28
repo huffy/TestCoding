@@ -4,71 +4,66 @@ using System;
 using Assets.Script.Base;
 using UnityEngine.Events;
 using System.Collections.Generic;
-
-public enum EventDefine
+using Assets.Script.Tools;
+namespace Assets.Script.EventMgr
 {
-    TiggerType,      //触发开关
-    ChangeScene,     //切换场景
-}
-
-
-public class EventManager : TSingleton<EventManager>, IDisposable
-{
-    private Dictionary<EventDefine, UnityAction<object, EventArgs>> mEventDic = new Dictionary<EventDefine, UnityAction<object, EventArgs>>();
-
-    public EventManager()
+    public class EventManager : TSingleton<EventManager>, IDisposable
     {
-        if (mEventDic == null)
+        private Dictionary<EventDefineEnum, UnityAction<object, EventArgs>> mEventDic = new Dictionary<EventDefineEnum, UnityAction<object, EventArgs>>();
+
+        public EventManager()
         {
-            mEventDic = new Dictionary<EventDefine, UnityAction<object, EventArgs>>();
-            mEventDic.Clear();
+            if (mEventDic == null)
+            {
+                mEventDic = new Dictionary<EventDefineEnum, UnityAction<object, EventArgs>>();
+                mEventDic.Clear();
+            }
         }
-    }
 
-    public void AddListener(EventDefine eventID, UnityAction<object, EventArgs> eventHadle)
-    {
-        if (!mEventDic.ContainsKey(eventID))
+        public void AddListener(EventDefineEnum eventID, UnityAction<object, EventArgs> eventHadle)
         {
-            mEventDic.Add(eventID, eventHadle);
+            if (!mEventDic.ContainsKey(eventID))
+            {
+                mEventDic.Add(eventID, eventHadle);
+            }
+            else
+            {
+                mEventDic[eventID] += eventHadle;
+            }
         }
-        else
+
+        public void RemoveListener(EventDefineEnum eventID, UnityAction<object, EventArgs> eventHadle)
         {
-            mEventDic[eventID] += eventHadle;
+            if (mEventDic.ContainsKey(eventID))
+            {
+                mEventDic[eventID] -= eventHadle;
+            }
         }
-    }
 
-    public void RemoveListener(EventDefine eventID, UnityAction<object, EventArgs> eventHadle)
-    {
-        if (mEventDic.ContainsKey(eventID))
+
+        public void RasieEvent(EventDefineEnum eventID, object obj, EventArgs e)
         {
-            mEventDic[eventID] -= eventHadle;
+            if (mEventDic.ContainsKey(eventID))
+            {
+                mEventDic[eventID].Invoke(obj, e);
+            }
         }
-    }
 
-
-    public void RasieEvent(EventDefine eventID, object obj, EventArgs e)
-    {
-        if (mEventDic.ContainsKey(eventID))
+        public void RemoveAllListener()
         {
-            mEventDic[eventID].Invoke(obj, e);
+            if (mEventDic != null)
+            {
+                mEventDic.Clear();
+            }
         }
-    }
 
-    public void RemoveAllListener()
-    {
-        if (mEventDic != null)
+        public override void Dispose()
         {
-            mEventDic.Clear();
+            base.Dispose();
+            RemoveAllListener();
+            mEventDic = null;
         }
+
     }
-
-    public override void Dispose()
-    {
-        base.Dispose();
-        RemoveAllListener();
-        mEventDic = null;
-    }
-
-
 
 }

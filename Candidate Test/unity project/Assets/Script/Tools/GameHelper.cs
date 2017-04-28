@@ -17,7 +17,7 @@ namespace Assets.Script.Tools
     {
 
         public Camera MainCamera;
-        public delegate void DoSomeHandle(EventNoticeParam param);
+        public delegate void DoSomeHandle(EventArgs param);
         public Vector3 LeftWallVec;
         public Vector3 RightWallVec;
         public Vector3 BottomWallVec;
@@ -214,7 +214,7 @@ namespace Assets.Script.Tools
         /// <param name="DelayTime"> == 0 则延迟一帧 </param>
         /// <param name="mDoSomeHandle"></param>
         /// <returns></returns>
-        public IEnumerator DelayHandle(float DelayTime, DoSomeHandle mDoSomeHandle, EventNoticeParam param = null)
+        public IEnumerator DelayHandle(float DelayTime, DoSomeHandle mDoSomeHandle, EventArgs e = null)
         {
             if (DelayTime <= 0)
             {
@@ -224,7 +224,7 @@ namespace Assets.Script.Tools
             {
                 yield return new WaitForSeconds(DelayTime);
             }
-            mDoSomeHandle(param);
+            mDoSomeHandle(e);
         }
 
         public override void Dispose()

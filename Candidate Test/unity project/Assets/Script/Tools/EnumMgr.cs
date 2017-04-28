@@ -29,4 +29,22 @@ namespace Assets.Script.Tools
         Max,
     }
 
+    public enum EventDefineEnum
+    {
+       SelectTrash,
+       ReleaseTrash,     
+    }
+
+    public enum SoundEnum
+    {
+        PickUpTrash,
+        EndMagicParticle,
+        OpenBin,
+        CloseBin,
+        Trashbinmoving,
+        TrashintheBinFood,
+        TrashintheBinPlastics,
+        TrashintheBinPaper,
+        TrashintheBinGlass,
+    }
 }

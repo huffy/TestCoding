@@ -33,11 +33,6 @@ namespace Assets.Script.AudioMgr
         #endregion
 
         #region Init
-        public AudioControl()
-        {
-
-        }
-
         public override void Init()
         {
             base.Init();
@@ -45,6 +40,7 @@ namespace Assets.Script.AudioMgr
             audioBGMVolume = mAudioSourceArr[0].volume;
             audioVolume = mAudioSourceArr[1].volume;
             tempVolume = audioVolume;
+            InitSoundResource();
         }
 
         public override void Dispose()
@@ -72,6 +68,21 @@ namespace Assets.Script.AudioMgr
                     SetTempVolume();
                 }
             }
+        }
+
+        private void InitSoundResource()
+        {
+            string filePath = "common";
+            LoadAudioData((int)SoundEnum.PickUpTrash, filePath, "10_General_pickup an item");
+            LoadAudioData((int)SoundEnum.EndMagicParticle, filePath, "13_General_magicsound");
+            filePath = "minigames/minigame18recycletrash";
+            LoadAudioData((int)SoundEnum.TrashintheBinFood, filePath, "75_Recycling_TrashintheBin food");
+            LoadAudioData((int)SoundEnum.TrashintheBinGlass, filePath, "75_Recycling_TrashintheBin glass");
+            LoadAudioData((int)SoundEnum.TrashintheBinPaper, filePath, "75_Recycling_TrashintheBin paper");
+            LoadAudioData((int)SoundEnum.TrashintheBinPlastics, filePath, "75_Recycling_TrashintheBin plastics");
+            LoadAudioData((int)SoundEnum.Trashbinmoving, filePath, "77A_Recycling_Trashbinmoving");
+            LoadAudioData((int)SoundEnum.OpenBin, filePath, "76_Recycling_OpenBin");
+            LoadAudioData((int)SoundEnum.CloseBin, filePath, "77_Recycling_CloseBin");
         }
 
         private void SetTempVolume()
@@ -148,6 +159,10 @@ namespace Assets.Script.AudioMgr
                 return;
             }
             AudioClip mAudioClip = GetAudioClipByID(ID);
+            if (mAudioClip == null)
+            {
+                DebugHelper.DebugLogError("PlayAudioBySource  Invaild ID === " + ID);
+            }
             SetAudioScoure(ref mAudioSource, mAudioClip, audioVolume, bLoop);
         }
 
@@ -189,7 +204,16 @@ namespace Assets.Script.AudioMgr
         /// <param name="ID"></param>
         public float GetAudioLength(int ID)
         {
-            return GetAudioClipByID(ID).length;
+            AudioClip clip = GetAudioClipByID(ID);
+            if (clip != null)
+            {
+                return clip.length;
+            }
+            else
+            {
+                DebugHelper.DebugLogError("GetAudioLength  Invaild ID === " + ID);
+                return 0;
+            }
         }
 
         /// <summary>
@@ -231,7 +255,10 @@ namespace Assets.Script.AudioMgr
             float volume = 1;
             if (mAudioSource == null) return;
             AudioClip mAudioClip = GetAudioClipByID(ID);
-
+            if (mAudioClip == null)
+            {
+                DebugHelper.DebugLogError("PlayAudioDataByID  Invaild ID === " + ID);
+            }
             volume = isBGM ? audioBGMVolume : audioVolume;
             SetAudioScoure(ref mAudioSource, mAudioClip, volume, bLoop);
         }
@@ -278,7 +305,7 @@ namespace Assets.Script.AudioMgr
         {
             if (mAudioDic.ContainsKey(ID) == false)
             {
-                LoadAudioData(ID);
+                return null;
             }
 
             return mAudioDic[ID];
@@ -288,9 +315,9 @@ namespace Assets.Script.AudioMgr
         /// <summary>
         /// 加载音效
         /// </summary>
-        private void LoadAudioData(int ID)
+        private void LoadAudioData(int ID, string fileName, string soundName)
         {
-            string pathStr = "";
+            string pathStr = string.Format(StaticMemberMgr.SOUND_RESOURCE_PATH, fileName, soundName);
             AudioClip clip = (AudioClip)Resources.Load(pathStr, typeof(AudioClip));
             mAudioDic.Add(ID, clip);
         }

@@ -2,11 +2,13 @@
 using System.Collections;
 using Assets.Script.Base;
 using Assets.Script.Tools;
+using Assets.Script.EventMgr;
 
 namespace Assets.Script.Trash
 {
     public class BaseTrash : BaseCreator
     {
+        #region public
         public bool ArriveGround
         {
             get
@@ -14,7 +16,39 @@ namespace Assets.Script.Trash
                 return bArriveGround;
             }
         }
-        public float InitHeight = 0.5f, MaxHeightOffset = 0.1f, MinDistance = 0.1f;
+        public virtual ContainerEnum TrashType
+        {
+            get
+            {
+                return ContainerEnum.Food;
+            }
+        }
+        public virtual float InitHeight
+        {
+            get
+            {
+                return 0.5f;
+            }
+        }
+
+        public virtual float MaxHeightOffset
+        {
+            get
+            {
+                return 0.1f;
+            }
+        }
+
+        public virtual float MinDistance
+        {
+            get
+            {
+                return 0.1f;
+            }
+        }
+
+        #endregion
+
         private bool bArriveGround;
         private Rigidbody mRigidbody;
         private float mLeftMax, mRightMax;
@@ -51,6 +85,26 @@ namespace Assets.Script.Trash
         {
         }
 
+        public void ReleaseTrash()
+        {
+            if (mRigidbody)
+            {
+                mRigidbody.useGravity = true;
+            }
+            bArriveGround = false;
+            ContainerTypeParam trashType = new ContainerTypeParam(TrashType);
+            EventManager.instance.RasieEvent(EventDefineEnum.ReleaseTrash, CacheObj, trashType);
+        }
+
+        public void StopRigidbody()
+        {
+            if (mRigidbody)
+            {
+                mRigidbody.useGravity = false;
+                mRigidbody.Sleep();
+            }
+        }
+
         private void InitTrashPos()
         {
             int loopCount = 0, maxLoopCount = 20;
@@ -75,12 +129,13 @@ namespace Assets.Script.Trash
         {
             bool bArrive;
             bArrive = GameHelper.instance.UnderGround(CacheTrans.localPosition, MaxHeightOffset);
-            if (bArrive && mRigidbody)
+            if (bArrive)
             {
-                mRigidbody.useGravity = false;
-                mRigidbody.Sleep();
+                StopRigidbody();
             }
             return bArrive;
         }
+
+      
     }
 }

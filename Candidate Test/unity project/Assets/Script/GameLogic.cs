@@ -14,13 +14,14 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using Assets.Script.EventMgr;
 
 namespace Assets.Script
 {
     public class GameLogic : BaseMonoBehaviour
     {
         public float audioTime = 0.5f;
-        public Camera MainCamera, UICamera;
+        public Camera MainCamera;
         private BaseState mGamestate;
         private GameStateEnum mCurrentState;
         private Dictionary<int, BaseContainer> mContainersDic;
@@ -42,6 +43,7 @@ namespace Assets.Script
             AudioControl.CreateInstance();
             GameHelper.CreateInstance();
             ControlManager.CreateInstance();
+            EventManager.CreateInstance();
             base.Init();
         }
 
@@ -51,7 +53,7 @@ namespace Assets.Script
         public override void InitComponent()
         {
             base.InitComponent();
-            ControlManager.instance.InitCamera(MainCamera, UICamera);
+            ControlManager.instance.InitCamera(MainCamera);
             mContainersDic = new Dictionary<int, BaseContainer>((int)ContainerEnum.Max);
             mTrashList = new List<BaseTrash>(StaticMemberMgr.MAX_TRASH);
             string path = StaticMemberMgr.SCENE_CONTAINERS_PATH;
@@ -119,6 +121,7 @@ namespace Assets.Script
             ControlManager.DestroyInstance();
             GameHelper.DestroyInstance();
             ControlManager.DestroyInstance();
+            EventManager.DestroyInstance();
             Dispose();
         }
 

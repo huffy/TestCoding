@@ -14,8 +14,13 @@ namespace Assets.Script.Tools
         public const string WALL_RIGHT_PATH = "Wall/RightWall";
         public const string WALL_BOTTOM_PATH = "Wall/BottomWall";
 
+        public const string SOUND_RESOURCE_PATH = "Sounds/{0}/{1}";
+
+
         public const int MAX_ANGLE = 360;
         public const int MAX_CONTAINER = 4;
         public const int MAX_TRASH = 11;
+
+
     }
 }

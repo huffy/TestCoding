@@ -6,12 +6,15 @@ using Assets.Script.Trash;
 
 public class ControlManager : TSingleton<ControlManager>, IDisposable
 {
+
+    public bool CanControl;
+
     #region private
-    private Camera cam, UICam;
-    #endregion
+    private Camera cam;
     private BaseTrash selectTrash;
     private int trashLayerIndex;
-    public bool CanControl;
+    #endregion
+
     public override void Init()
     {
         base.Init();
@@ -48,10 +51,9 @@ public class ControlManager : TSingleton<ControlManager>, IDisposable
     {
     }
 
-    public void InitCamera(Camera mainCamera, Camera UICamera)
+    public void InitCamera(Camera mainCamera)
     {
         cam = mainCamera;
-        UICam = UICamera;
     }
 
     public override void Update(float time)
@@ -61,38 +63,44 @@ public class ControlManager : TSingleton<ControlManager>, IDisposable
         {
             return;
         }
+        if (Input.GetMouseButtonDown(0))
+        {
+            selectTrash = HitTrash(PlatformTools.m_TouchPosition);
+        }
+        else if (Input.GetMouseButtonUp(0))
+        {
+            if (selectTrash)
+            {
+                selectTrash.ReleaseTrash();
+                selectTrash = null;
+            }
+        }
 
         if (Input.GetMouseButton(0))
         {
-            MouseMovePlayer(PlatformTools.m_TouchPosition);
-            Debug.Log("==ScreenSpace===" + UICam.ScreenToWorldPoint(PlatformTools.m_TouchPosition));
-        }
-        else
-        {
-
+            MouseMove(PlatformTools.m_TouchPosition);
         }
     }
-
 
     #region fuc
 
     /// <summary>
     /// 鼠标点击移动目标
     /// </summary>
-    private void MouseMovePlayer(Vector3 pos)
+    private void MouseMove(Vector3 pos)
     {
         Vector3 newPosition = Vector3.zero;
-        selectTrash = HitTrash(pos);
         if (selectTrash != null)
         {
-            //Vector3 ScreenSpace = cam.WorldToScreenPoint(selectTrash.CacheTrans.position);
-            //Vector3 offset = selectTrash.CacheTrans.position - UICam.ScreenToWorldPoint(new Vector3(pos.x, pos.y, ScreenSpace.z));
-            //newPosition = new Vector3(pos.x, pos.y, ScreenSpace.z);
-            //Debug.Log("== " + newPosition + " ScreenSpace===" + ScreenSpace + " pos===  " + pos);
-            newPosition = UICam.ScreenToViewportPoint(pos); //+ offset;
+            newPosition = Camera.main.WorldToScreenPoint(selectTrash.CacheTrans.position);
+            pos.z = newPosition.z;
+            newPosition.x = cam.ScreenToWorldPoint(pos).x;// + offset.x;
+            newPosition.y = cam.ScreenToWorldPoint(pos).y;// + offset.y;
             newPosition.z = selectTrash.CacheTrans.position.z;
-            //Debug.Log(" newPosition === "+ newPosition + " ScreenSpace===" + ScreenSpace + " pos===  "+ pos);
-            selectTrash.CacheTrans.position = newPosition;
+            if (GameHelper.instance.InTheArea(newPosition) && GameHelper.instance.UnderGround(newPosition, 0) == false)
+            {
+                selectTrash.CacheTrans.position = newPosition;
+            }
         }
     }
 

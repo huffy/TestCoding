@@ -1,4 +1,6 @@
-﻿namespace Assets.Script.Container
+﻿using Assets.Script.Tools;
+
+namespace Assets.Script.Container
 {
     public class GlassContainer : BaseContainer
     {
@@ -7,6 +9,14 @@
             get
             {
                 return "Glass";
+            }
+        }
+
+        public override ContainerEnum ContainerType
+        {
+            get
+            {
+                return ContainerEnum.Glass;
             }
         }
     }

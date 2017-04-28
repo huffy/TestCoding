@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Assets.Script.Tools;
 
 namespace Assets.Script.Container
 {
@@ -12,6 +13,14 @@ namespace Assets.Script.Container
             get
             {
                 return "Plastic";
+            }
+        }
+
+        public override ContainerEnum ContainerType
+        {
+            get
+            {
+                return ContainerEnum.Plastic;
             }
         }
     }
